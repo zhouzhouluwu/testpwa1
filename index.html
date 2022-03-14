@@ -1,41 +1,31 @@
-
+<!DOCTYPE html>
+<html lang="en">
 <head>
-  <title>Minimal PWA</title>
-  <meta name="viewport" content="width=device-width, user-scalable=no" />
-  <link rel="manifest" href="manifest.json" />
-  <link rel="stylesheet" type="text/css" href="main.css">
-  <link rel="icon" href="e.png" type="image/png" />
+	<meta charset="utf-8">
+	<title>js13kGames A-Frame entries</title>
+	<meta name="description" content="A list of A-Frame entries submitted to the js13kGames 2017 competition, used as an example for the MDN articles about Progressive Web Apps.">
+	<meta name="author" content="end3r">
+	<meta name="theme-color" content="#B12A34">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<meta property="og:image" content="icons/icon-512.png">
+	<link rel="shortcut icon" href="favicon.ico">
+	<link rel="stylesheet" href="style.css">
+	<link rel="manifest" href="js13kpwa.webmanifest">
+	<script src="data/games.js" defer></script>
+	<script src="app.js" defer></script>
 </head>
-
 <body>
-  <div class="revision">Revision 8</div>
-  <img src="pwa-fonts.png">
-  <div class="main-text">
-    Minimal PWA, open Console for more!
-  </div>
-  <div class="network-message">
-    Network:
-    <span id="network-status" class="">Good</span>
-  </div>
-  <div class="alert button">
-    <button onclick="alert('alert')" >Alert Button</button>
-
-  </div>
-  <script type="text/javascript">
-    if (navigator.serviceWorker != null) {
-      navigator.serviceWorker.register('sw.js')
-      .then(function(registration) {
-        alert('alert2')
-        // console.log('Registered events at scope: ', registration.scope);
-      });
-    }
-
-    fetch('./data.json')
-
-    var statusEl = document.querySelector('#network-status')
-    if (!navigator.onLine) {
-      statusEl.classList = ['is-offline']
-      statusEl.innerText = 'Offline'
-    }
-  </script>
+<header>
+	<p><a class="logo" href="http://js13kgames.com"><img src="img/js13kgames.png" alt="js13kGames"></a></p>
+</header>
+<main>
+	<h1>js13kGames A-Frame entries</h1>
+	<p class="description">List of games submitted to the <a href="http://js13kgames.com/aframe">A-Frame category</a> in the <a href="http://2017.js13kgames.com">js13kGames 2017</a> competition. You can <a href="https://github.com/mdn/pwa-examples/blob/master/js13kpwa">fork js13kPWA on GitHub</a> to check its source code.</p>
+	<button id="notifications">Request dummy notifications</button>
+	<section id="content"></section>
+</main>
+<footer>
+	<p>&copy; js13kGames 2012-2018, created and maintained by <a href="http://end3r.com">Andrzej Mazur</a> from <a href="http://enclavegames.com">Enclave Games</a>.</p>
+</footer>
 </body>
+</html>

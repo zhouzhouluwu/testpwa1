@@ -1,56 +1,53 @@
+self.importScripts('data/games.js');
 
-console.log('Script loaded!')
-var cacheStorageKey = 'minimal-pwa-8'
+// Files to cache
+const cacheName = 'js13kPWA-v1';
+const appShellFiles = [
+  '/pwa-examples/js13kpwa/',
+  '/pwa-examples/js13kpwa/index.html',
+  '/pwa-examples/js13kpwa/app.js',
+  '/pwa-examples/js13kpwa/style.css',
+  '/pwa-examples/js13kpwa/fonts/graduate.eot',
+  '/pwa-examples/js13kpwa/fonts/graduate.ttf',
+  '/pwa-examples/js13kpwa/fonts/graduate.woff',
+  '/pwa-examples/js13kpwa/favicon.ico',
+  '/pwa-examples/js13kpwa/img/js13kgames.png',
+  '/pwa-examples/js13kpwa/img/bg.png',
+  '/pwa-examples/js13kpwa/icons/icon-32.png',
+  '/pwa-examples/js13kpwa/icons/icon-64.png',
+  '/pwa-examples/js13kpwa/icons/icon-96.png',
+  '/pwa-examples/js13kpwa/icons/icon-128.png',
+  '/pwa-examples/js13kpwa/icons/icon-168.png',
+  '/pwa-examples/js13kpwa/icons/icon-192.png',
+  '/pwa-examples/js13kpwa/icons/icon-256.png',
+  '/pwa-examples/js13kpwa/icons/icon-512.png',
+];
+const gamesImages = [];
+for (let i = 0; i < games.length; i++) {
+  gamesImages.push(`data/img/${games[i].slug}.jpg`);
+}
+const contentToCache = appShellFiles.concat(gamesImages);
 
-var cacheList = [
-  '/',
-  "index.html",
-  "main.css",
-  "e.png",
-  "pwa-fonts.png"
-]
+// Installing Service Worker
+self.addEventListener('install', (e) => {
+  console.log('[Service Worker] Install');
+  e.waitUntil((async () => {
+    const cache = await caches.open(cacheName);
+    console.log('[Service Worker] Caching all: app shell and content');
+    await cache.addAll(contentToCache);
+  })());
+});
 
-self.addEventListener('install', function(e) {
-  console.log('Cache event!')
-  e.waitUntil(
-    caches.open(cacheStorageKey).then(function(cache) {
-      console.log('Adding to Cache:', cacheList)
-      return cache.addAll(cacheList)
-    }).then(function() {
-      console.log('Skip waiting!')
-      return self.skipWaiting()
-    })
-  )
-})
-
-self.addEventListener('activate', function(e) {
-  console.log('Activate event')
-  e.waitUntil(
-    Promise.all(
-      caches.keys().then(cacheNames => {
-        return cacheNames.map(name => {
-          if (name !== cacheStorageKey) {
-            return caches.delete(name)
-          }
-        })
-      })
-    ).then(() => {
-      console.log('Clients claims.')
-      return self.clients.claim()
-    })
-  )
-})
-
-self.addEventListener('fetch', function(e) {
-  // console.log('Fetch event:', e.request.url)
-  e.respondWith(
-    caches.match(e.request).then(function(response) {
-      if (response != null) {
-        console.log('Using cache for:', e.request.url)
-        return response
-      }
-      console.log('Fallback to fetch:', e.request.url)
-      return fetch(e.request.url)
-    })
-  )
-})
+// Fetching content using Service Worker
+self.addEventListener('fetch', (e) => {
+  e.respondWith((async () => {
+    const r = await caches.match(e.request);
+    console.log(`[Service Worker] Fetching resource: ${e.request.url}`);
+    if (r) return r;
+    const response = await fetch(e.request);
+    const cache = await caches.open(cacheName);
+    console.log(`[Service Worker] Caching new resource: ${e.request.url}`);
+    cache.put(e.request, response.clone());
+    return response;
+  })());
+});
